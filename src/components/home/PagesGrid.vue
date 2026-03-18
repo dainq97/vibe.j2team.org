@@ -190,21 +190,23 @@ useEventListener(document, 'keydown', handleKeydown)
             /
           </kbd>
         </div>
-        <button
-          :disabled="filteredPages.length === 0"
-          class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-display tracking-wide border border-accent-coral text-accent-coral bg-accent-coral/10 transition-colors duration-200 hover:bg-accent-coral hover:text-bg-deep disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap"
-          @click="goToRandom"
-        >
-          <Icon icon="lucide:shuffle" aria-hidden="true" class="w-4 h-4" />
-          Ngẫu nhiên
-        </button>
-        <RouterLink
-          to="/bookmarks"
-          class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-display tracking-wide border border-accent-coral text-accent-coral bg-accent-coral/10 transition-colors duration-200 hover:bg-accent-coral hover:text-bg-deep whitespace-nowrap"
-        >
-          <Icon icon="lucide:heart" class="w-4 h-4 icon-filled" />
-          Yêu thích
-        </RouterLink>
+        <div class="grid grid-cols-2 sm:flex gap-3">
+          <button
+            :disabled="filteredPages.length === 0"
+            class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-display tracking-wide border border-accent-coral text-accent-coral bg-accent-coral/10 transition-colors duration-200 hover:bg-accent-coral hover:text-bg-deep disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap"
+            @click="goToRandom"
+          >
+            <Icon icon="lucide:shuffle" aria-hidden="true" class="w-4 h-4" />
+            Ngẫu nhiên
+          </button>
+          <RouterLink
+            to="/bookmarks"
+            class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-display tracking-wide border border-accent-coral text-accent-coral bg-accent-coral/10 transition-colors duration-200 hover:bg-accent-coral hover:text-bg-deep whitespace-nowrap"
+          >
+            <Icon icon="lucide:heart" class="w-4 h-4 icon-filled" />
+            Yêu thích
+          </RouterLink>
+        </div>
       </div>
 
       <!-- Category tags -->
