@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineAsyncComponent } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { useClipboard, useTimeoutFn } from '@vueuse/core'
+import { useClipboard, useShare, useTimeoutFn } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import { REPO_URL } from '@/data/constants'
 import { pages } from '@/data/pages-loader'
@@ -83,16 +83,20 @@ function goToRandom() {
 
 const { copy, copied } = useClipboard({ copiedDuring: 1500 })
 
-async function sharePage() {
-  const url = window.location.href
-  const title = route.meta.title || document.title
+const shareOptions = computed(() => ({
+  title: (route.meta.title as string) || document.title,
+  url: window.location.href,
+}))
 
-  if (navigator.share) {
-    await navigator.share({ title, url }).catch(() => {})
+const { share, isSupported: isShareSupported } = useShare(shareOptions)
+
+async function sharePage() {
+  if (isShareSupported.value) {
+    await share().catch(() => {})
     return
   }
 
-  await copy(url)
+  await copy(window.location.href)
 }
 
 function reportIssue() {
