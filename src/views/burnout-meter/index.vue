@@ -22,7 +22,10 @@ const questions: Question[] = [
 
   // Depersonalization (DP) - 5 questions
   { text: 'Tôi đối xử với đồng nghiệp/khách hàng như những đối tượng vô cảm.', dimension: 'DP' },
-  { text: 'Tôi trở nên lạnh lùng hơn với mọi người kể từ khi nhận công việc này.', dimension: 'DP' },
+  {
+    text: 'Tôi trở nên lạnh lùng hơn với mọi người kể từ khi nhận công việc này.',
+    dimension: 'DP',
+  },
   { text: 'Tôi lo ngại rằng công việc đang khiến tôi chai sạn về cảm xúc.', dimension: 'DP' },
   { text: 'Tôi thực sự không quan tâm đến những gì xảy ra với đồng nghiệp.', dimension: 'DP' },
   { text: 'Tôi cảm thấy đồng nghiệp đổ lỗi cho tôi về vấn đề của họ.', dimension: 'DP' },
@@ -30,7 +33,10 @@ const questions: Question[] = [
   // Personal Accomplishment (PA) - 8 questions (reverse scored)
   { text: 'Tôi có thể dễ dàng hiểu cảm xúc của đồng nghiệp.', dimension: 'PA' },
   { text: 'Tôi xử lý các vấn đề trong công việc rất hiệu quả.', dimension: 'PA' },
-  { text: 'Tôi cảm thấy mình đang ảnh hưởng tích cực đến cuộc sống người khác qua công việc.', dimension: 'PA' },
+  {
+    text: 'Tôi cảm thấy mình đang ảnh hưởng tích cực đến cuộc sống người khác qua công việc.',
+    dimension: 'PA',
+  },
   { text: 'Tôi cảm thấy rất năng động và tràn đầy năng lượng.', dimension: 'PA' },
   { text: 'Tôi có thể tạo ra không khí thoải mái với đồng nghiệp.', dimension: 'PA' },
   { text: 'Tôi cảm thấy phấn chấn sau khi làm việc chặt chẽ với đồng nghiệp.', dimension: 'PA' },
@@ -60,14 +66,14 @@ const allAnswered = computed(() => answeredCount.value === questions.length)
 // --- Scoring ---
 const scores = computed(() => {
   const ee = questions
-    .map((q, i) => (q.dimension === 'EE' ? answers.value[i] ?? 0 : 0))
+    .map((q, i) => (q.dimension === 'EE' ? (answers.value[i] ?? 0) : 0))
     .reduce((a, b) => a + b, 0)
   const dp = questions
-    .map((q, i) => (q.dimension === 'DP' ? answers.value[i] ?? 0 : 0))
+    .map((q, i) => (q.dimension === 'DP' ? (answers.value[i] ?? 0) : 0))
     .reduce((a, b) => a + b, 0)
   // PA is reverse: HIGH score = LOW burnout
   const pa = questions
-    .map((q, i) => (q.dimension === 'PA' ? answers.value[i] ?? 0 : 0))
+    .map((q, i) => (q.dimension === 'PA' ? (answers.value[i] ?? 0) : 0))
     .reduce((a, b) => a + b, 0)
 
   return { ee, dp, pa }
@@ -100,28 +106,32 @@ const burnoutConfig = computed(() => {
       emoji: '🔴',
       color: 'text-red-400',
       bg: 'bg-red-400/10 border-red-400/30',
-      message: 'Bạn đang có dấu hiệu burnout nghiêm trọng. Hãy nghiêm túc xem xét việc nghỉ ngơi, trao đổi với quản lý, hoặc tìm kiếm hỗ trợ từ chuyên gia tâm lý.',
+      message:
+        'Bạn đang có dấu hiệu burnout nghiêm trọng. Hãy nghiêm túc xem xét việc nghỉ ngơi, trao đổi với quản lý, hoặc tìm kiếm hỗ trợ từ chuyên gia tâm lý.',
     },
     warning: {
       label: 'CẢNH BÁO',
       emoji: '🟡',
       color: 'text-accent-amber',
       bg: 'bg-accent-amber/10 border-accent-amber/30',
-      message: 'Bạn đang có dấu hiệu kiệt sức ở mức đáng lo ngại. Cần chủ động điều chỉnh: giảm workload, đặt ranh giới công việc-cuộc sống, và dành thời gian cho bản thân.',
+      message:
+        'Bạn đang có dấu hiệu kiệt sức ở mức đáng lo ngại. Cần chủ động điều chỉnh: giảm workload, đặt ranh giới công việc-cuộc sống, và dành thời gian cho bản thân.',
     },
     caution: {
       label: 'LƯU Ý',
       emoji: '🟠',
       color: 'text-accent-coral',
       bg: 'bg-accent-coral/10 border-accent-coral/30',
-      message: 'Bạn có một số dấu hiệu stress nhẹ. Đây là bình thường nhưng hãy theo dõi và chăm sóc bản thân tốt hơn.',
+      message:
+        'Bạn có một số dấu hiệu stress nhẹ. Đây là bình thường nhưng hãy theo dõi và chăm sóc bản thân tốt hơn.',
     },
     healthy: {
       label: 'KHỎE MẠNH',
       emoji: '🟢',
       color: 'text-emerald-400',
       bg: 'bg-emerald-400/10 border-emerald-400/30',
-      message: 'Tuyệt vời! Sức khỏe tinh thần cua bạn đang ở mức tốt. Hãy duy trì lối sống lành mạnh này.',
+      message:
+        'Tuyệt vời! Sức khỏe tinh thần của bạn đang ở mức tốt. Hãy duy trì lối sống lành mạnh này.',
     },
   }
   return configs[overallBurnout.value] ?? configs.healthy
@@ -207,7 +217,14 @@ function dimensionIcon(dim: string): string {
           <span class="font-display font-bold text-accent-coral">Dev Burnout Meter</span>
         </div>
         <span class="text-[10px] text-text-dim font-display">
-          bởi <a href="https://www.facebook.com/nmdung.dev" target="_blank" rel="noopener noreferrer" class="text-accent-coral hover:underline">nmdung.dev</a>
+          bởi
+          <a
+            href="https://www.facebook.com/nmdung.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-accent-coral hover:underline"
+            >nmdung.dev</a
+          >
         </span>
       </div>
     </div>
@@ -249,12 +266,20 @@ function dimensionIcon(dim: string): string {
         </div>
 
         <!-- Current question -->
-        <div class="border border-border-default bg-bg-surface p-6 md:p-8 mb-6 animate-fade-up animate-delay-2">
+        <div
+          class="border border-border-default bg-bg-surface p-6 md:p-8 mb-6 animate-fade-up animate-delay-2"
+        >
           <div class="flex items-start gap-3 mb-2">
             <span class="text-accent-coral font-display text-sm tracking-widest mt-1">//</span>
             <div>
               <span class="text-[10px] text-text-dim font-display tracking-widest block mb-1">
-                {{ questions[currentQuestion]?.dimension === 'EE' ? 'KIỆT SỨC CẢM XÚC' : questions[currentQuestion]?.dimension === 'DP' ? 'MẤT KẾT NỐI' : 'HIỆU QUẢ CÁ NHÂN' }}
+                {{
+                  questions[currentQuestion]?.dimension === 'EE'
+                    ? 'KIỆT SỨC CẢM XÚC'
+                    : questions[currentQuestion]?.dimension === 'DP'
+                      ? 'MẤT KẾT NỐI'
+                      : 'HIỆU QUẢ CÁ NHÂN'
+                }}
               </span>
               <p class="text-lg md:text-xl font-medium leading-relaxed">
                 {{ questions[currentQuestion]?.text }}
@@ -356,7 +381,12 @@ function dimensionIcon(dim: string): string {
 
             <div class="flex justify-between items-center">
               <span class="text-xs text-text-dim">{{ radarData[dim] }}%</span>
-              <span :class="['text-xs font-display font-semibold', severityColor(severity[dim] ?? 'low')]">
+              <span
+                :class="[
+                  'text-xs font-display font-semibold',
+                  severityColor(severity[dim] ?? 'low'),
+                ]"
+              >
                 {{ severityLabel(severity[dim] ?? 'low') }}
               </span>
             </div>
@@ -364,8 +394,12 @@ function dimensionIcon(dim: string): string {
         </div>
 
         <!-- Dimension explanations -->
-        <div class="border border-border-default bg-bg-surface p-5 mb-6 animate-fade-up animate-delay-2">
-          <h3 class="font-display text-sm font-semibold text-text-secondary tracking-widest mb-4 flex items-center gap-2">
+        <div
+          class="border border-border-default bg-bg-surface p-5 mb-6 animate-fade-up animate-delay-2"
+        >
+          <h3
+            class="font-display text-sm font-semibold text-text-secondary tracking-widest mb-4 flex items-center gap-2"
+          >
             <span class="text-accent-sky">//</span>
             GIẢI THÍCH CHỈ SỐ
           </h3>
@@ -388,15 +422,20 @@ function dimensionIcon(dim: string): string {
               <Icon icon="lucide:trophy" class="w-4 h-4 text-accent-coral shrink-0 mt-0.5" />
               <div>
                 <span class="font-semibold text-text-primary">Hiệu quả cá nhân (PA):</span>
-                Cảm giác thành tựu và đóng góp. Thanh thấp = bạn cảm thấy vô dụng → cần được động viên.
+                Cảm giác thành tựu và đóng góp. Thanh thấp = bạn cảm thấy vô dụng → cần được động
+                viên.
               </div>
             </div>
           </div>
         </div>
 
         <!-- Tips -->
-        <div class="border border-accent-sky/30 bg-bg-surface p-5 mb-6 animate-fade-up animate-delay-3">
-          <h3 class="font-display text-sm font-semibold text-text-secondary tracking-widest mb-4 flex items-center gap-2">
+        <div
+          class="border border-accent-sky/30 bg-bg-surface p-5 mb-6 animate-fade-up animate-delay-3"
+        >
+          <h3
+            class="font-display text-sm font-semibold text-text-secondary tracking-widest mb-4 flex items-center gap-2"
+          >
             <span class="text-accent-sky">//</span>
             LỜI KHUYÊN CHO DEV
           </h3>
@@ -431,8 +470,8 @@ function dimensionIcon(dim: string): string {
         <!-- Disclaimer -->
         <div class="text-xs text-text-dim text-center mb-6 animate-fade-up animate-delay-4">
           <Icon icon="lucide:info" class="inline w-3 h-3 mr-1" />
-          Công cụ này chỉ mang tính tham khảo, không thay thế chẩn đoán y khoa.
-          Nếu bạn gặp vấn đề nghiêm trọng, hãy liên hệ chuyên gia tâm lý.
+          Công cụ này chỉ mang tính tham khảo, không thay thế chẩn đoán y khoa. Nếu bạn gặp vấn đề
+          nghiêm trọng, hãy liên hệ chuyên gia tâm lý.
         </div>
 
         <!-- Retake button -->
