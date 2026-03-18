@@ -160,10 +160,10 @@ Before implementing any new feature or sub-page, agents MUST:
    - `@vueuse/core` — Vue composables
    - `@iconify/vue` — Icon component
    - `html-to-image` — DOM-to-image capture (PNG/JPEG/SVG)
+   - `shiki` — Syntax highlighter
 
    The following are **pre-approved** and can be added without additional approval:
    - `vue-konva` — 2D canvas library for drawing, games, and interactive graphics
-   - `shiki` — Syntax highlighter
 8. **Folder names must be kebab-case** — sub-page directories under `src/views/` must use lowercase kebab-case (e.g., `my-app`, `dev-rpg`). PascalCase or mixed-case folder names are not allowed
 9. **Author attribution required** — every page must have an `author` field in its `meta.ts` file
 10. **External libraries & APIs are welcome** — Sub-apps can load third-party JS libraries at runtime via `useScriptTag()` from `@vueuse/core` (e.g., YouTube IFrame API, Tone.js, Matter.js, p5.js). Authors can also call free/public external APIs (e.g., weather, dictionary, trivia, exchange rates) to power their features — just don't hard-code API keys in source code (see rule 8 in PR Checklist)
