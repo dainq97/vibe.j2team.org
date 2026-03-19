@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { Icon } from '@iconify/vue'
 import { DERIVED_LUCIDE } from '../constants/icons'
@@ -13,11 +13,17 @@ const { locale } = useI18n()
 
 const step = ref(0) // 0 = dark, 1 = seed falls, 2 = narration 1, 3 = narration 2, 4 = ready
 
+const timers: ReturnType<typeof setTimeout>[] = []
+
 onMounted(() => {
-  setTimeout(() => (step.value = 1), 600)
-  setTimeout(() => (step.value = 2), 2000)
-  setTimeout(() => (step.value = 3), 4500)
-  setTimeout(() => (step.value = 4), 7000)
+  timers.push(setTimeout(() => (step.value = 1), 600))
+  timers.push(setTimeout(() => (step.value = 2), 2000))
+  timers.push(setTimeout(() => (step.value = 3), 4500))
+  timers.push(setTimeout(() => (step.value = 4), 7000))
+})
+
+onUnmounted(() => {
+  timers.forEach(clearTimeout)
 })
 </script>
 

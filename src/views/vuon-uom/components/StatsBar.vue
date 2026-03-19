@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import type { Stats, DerivedStats, StatKey, ResourceKey } from '../types'
 import { Icon } from '@iconify/vue'
 import { TRACK_LUCIDE, DERIVED_LUCIDE, RESOURCE_LUCIDE } from '../constants/icons'
@@ -20,6 +20,9 @@ const STAT_CONFIG: { key: StatKey; color: string }[] = [
 // ── Animated display values ──────────────────────────────────────────────
 const displayStats = ref<Stats>({ ...props.stats })
 
+const activeIntervals = new Set<ReturnType<typeof setInterval>>()
+const activeTimers = new Set<ReturnType<typeof setTimeout>>()
+
 function animateValue(key: StatKey, from: number, to: number) {
   const diff = to - from
   if (diff === 0) return
@@ -34,8 +37,10 @@ function animateValue(key: StatKey, from: number, to: number) {
     if (step >= steps) {
       displayStats.value[key] = to
       clearInterval(interval)
+      activeIntervals.delete(interval)
     }
   }, 35)
+  activeIntervals.add(interval)
 }
 
 const deltas = ref<Partial<Record<StatKey, number>>>({})
@@ -65,14 +70,21 @@ watch(
       deltas.value = newDeltas
       showDeltas.value = true
       bounceKeys.value = newBounce
-      setTimeout(() => {
+      const id = setTimeout(() => {
         showDeltas.value = false
         bounceKeys.value = new Set()
+        activeTimers.delete(id)
       }, 1800)
+      activeTimers.add(id)
     }
   },
   { deep: true },
 )
+
+onUnmounted(() => {
+  activeIntervals.forEach(clearInterval)
+  activeTimers.forEach(clearTimeout)
+})
 </script>
 
 <template>

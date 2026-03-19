@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import type { Card, StatKey } from './types'
 import { useI18n } from './composables/useI18n'
 import { useGame } from './composables/useGame'
@@ -71,6 +71,16 @@ const STAT_COLORS: Record<StatKey, string> = {
   digital: '#38BDF8',
 }
 
+const activeTimers = new Set<ReturnType<typeof setTimeout>>()
+
+function safeTimeout(fn: () => void, ms: number) {
+  const id = setTimeout(() => {
+    activeTimers.delete(id)
+    fn()
+  }, ms)
+  activeTimers.add(id)
+}
+
 watch(
   () => ({ ...state.stats }),
   (newStats) => {
@@ -81,7 +91,7 @@ watch(
         const label = STAT_LABELS[key]
         // Screen flash
         showFlash.value = true
-        setTimeout(() => {
+        safeTimeout(() => {
           showFlash.value = false
         }, 400)
         // Toast with color
@@ -93,7 +103,7 @@ watch(
               ? `${label.vi} đạt 30 — Mở khóa thẻ Văn Hóa!`
               : `${label.en} hit 30 — Culture cards unlocked!`,
         }
-        setTimeout(() => {
+        safeTimeout(() => {
           unlockToast.value = null
         }, 4000)
       }
@@ -109,11 +119,15 @@ const confirmReady = computed(() => state.selectedIds.size > 0 || state.playedTh
 const isConfirming = ref(false)
 function handleConfirm() {
   isConfirming.value = true
-  setTimeout(() => {
+  safeTimeout(() => {
     isConfirming.value = false
   }, 300)
   confirmSelection()
 }
+
+onUnmounted(() => {
+  activeTimers.forEach(clearTimeout)
+})
 
 function handleSkipFromTitle() {
   startGame()
@@ -164,9 +178,7 @@ function handleSkipFromTitle() {
 
     <!-- Game nav -->
     <div class="flex items-center justify-between px-3 pt-1 pb-0">
-      <button class="game-nav-btn" @click="goToMenu">
-        ← {{ locale === 'vi' ? 'Menu' : 'Menu' }}
-      </button>
+      <button class="game-nav-btn" @click="goToMenu">← Menu</button>
       <button class="game-nav-btn" @click="restartGame">
         ↺ {{ locale === 'vi' ? 'Chơi lại' : 'Restart' }}
       </button>

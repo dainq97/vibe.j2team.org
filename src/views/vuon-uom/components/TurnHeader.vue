@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { Icon } from '@iconify/vue'
 import { RESOURCE_LUCIDE } from '../constants/icons'
@@ -23,60 +23,45 @@ const matBounce = ref(false)
 const knowBounce = ref(false)
 const yearPop = ref(false)
 
+const timers = new Set<ReturnType<typeof setTimeout>>()
+
+function scheduleBounce(flag: typeof budgetBounce, duration = 400) {
+  flag.value = true
+  const id = setTimeout(() => {
+    flag.value = false
+    timers.delete(id)
+  }, duration)
+  timers.add(id)
+}
+
 watch(
   () => props.budget,
-  () => {
-    budgetBounce.value = true
-    setTimeout(() => {
-      budgetBounce.value = false
-    }, 400)
-  },
+  () => scheduleBounce(budgetBounce),
 )
 watch(
   () => props.energy,
-  () => {
-    energyBounce.value = true
-    setTimeout(() => {
-      energyBounce.value = false
-    }, 400)
-  },
+  () => scheduleBounce(energyBounce),
 )
 watch(
   () => props.food,
-  () => {
-    foodBounce.value = true
-    setTimeout(() => {
-      foodBounce.value = false
-    }, 400)
-  },
+  () => scheduleBounce(foodBounce),
 )
 watch(
   () => props.materials,
-  () => {
-    matBounce.value = true
-    setTimeout(() => {
-      matBounce.value = false
-    }, 400)
-  },
+  () => scheduleBounce(matBounce),
 )
 watch(
   () => props.knowledge,
-  () => {
-    knowBounce.value = true
-    setTimeout(() => {
-      knowBounce.value = false
-    }, 400)
-  },
+  () => scheduleBounce(knowBounce),
 )
 watch(
   () => props.year,
-  () => {
-    yearPop.value = true
-    setTimeout(() => {
-      yearPop.value = false
-    }, 500)
-  },
+  () => scheduleBounce(yearPop, 500),
 )
+
+onUnmounted(() => {
+  timers.forEach(clearTimeout)
+})
 </script>
 
 <template>
