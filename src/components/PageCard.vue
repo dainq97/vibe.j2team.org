@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import type { PageInfo } from '@/types/page'
+import { toAuthorSlug } from '@/data/authors'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 
 defineProps<{
@@ -44,17 +45,13 @@ defineProps<{
       :class="compact ? 'pt-3 text-[10px]' : 'pt-4 text-xs'"
     >
       bởi
-      <a
-        v-if="page.facebook"
-        :href="page.facebook"
-        target="_blank"
-        rel="noopener noreferrer"
+      <RouterLink
+        :to="{ name: 'author', params: { slug: toAuthorSlug(page.author) } }"
         class="text-accent-coral hover:underline"
         @click.stop
       >
         {{ page.author }}
-      </a>
-      <span v-else>{{ page.author }}</span>
+      </RouterLink>
     </p>
   </RouterLink>
 </template>

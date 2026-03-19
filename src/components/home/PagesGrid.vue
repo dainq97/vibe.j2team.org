@@ -6,6 +6,7 @@ import { Icon } from '@iconify/vue'
 import { pages, featuredPages } from '@/data/pages-loader'
 import type { PageInfo } from '@/types/page'
 import { padIndex } from '@/data/homepage'
+import { toAuthorSlug } from '@/data/authors'
 import { categories, type CategoryId } from '@/data/categories'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 import { useFavoritesStore } from '@/stores/useFavoritesStore'
@@ -336,17 +337,13 @@ useEventListener(document, 'keydown', handleKeydown)
         </p>
         <p class="mt-auto pt-4 text-xs text-text-dim font-display tracking-wide">
           bởi
-          <a
-            v-if="page.facebook"
-            :href="page.facebook"
-            target="_blank"
-            rel="noopener noreferrer"
+          <RouterLink
+            :to="{ name: 'author', params: { slug: toAuthorSlug(page.author) } }"
             class="text-accent-coral hover:underline"
             @click.stop
           >
             {{ page.author }}
-          </a>
-          <span v-else>{{ page.author }}</span>
+          </RouterLink>
         </p>
       </RouterLink>
 
