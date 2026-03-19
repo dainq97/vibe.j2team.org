@@ -13,6 +13,12 @@ const AVATAR_COLORS = [
   '#f472b6',
 ]
 
+const GITHUB_USERNAME_RE = /^[a-zA-Z0-9-]+$/
+const GITHUB_URL_RE = /github\.com/i
+
+export const isLikelyGitHubUsername = (name: string) => GITHUB_USERNAME_RE.test(name)
+export const isGitHubUrl = (url: string) => GITHUB_URL_RE.test(url)
+
 /**
  * useGithubAvatar — returns GitHub avatar URL using the `.png` trick
  * (https://github.com/{username}.png) which avoids API calls and rate limits.
@@ -20,9 +26,7 @@ const AVATAR_COLORS = [
  * For non-GitHub usernames or failed loads, falls back to a colored initial avatar.
  */
 export function useGithubAvatar(author: string) {
-  const isLikelyGitHubUsername = /^[a-zA-Z0-9-]+$/.test(author)
-
-  const avatarUrl = ref(isLikelyGitHubUsername ? `https://github.com/${author}.png` : null)
+  const avatarUrl = ref(isLikelyGitHubUsername(author) ? `https://github.com/${author}.png` : null)
 
   function onAvatarError() {
     avatarUrl.value = null

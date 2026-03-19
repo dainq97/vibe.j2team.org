@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { getCategoryLabel } from '@/data/categories'
-import { useGithubAvatar } from '../composables/useGithubAvatars'
+import AuthorAvatar from '@/components/AuthorAvatar.vue'
 import type { PageInfo } from '@/types/page'
 
 const props = defineProps<{
@@ -20,8 +20,6 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-
-const { avatarUrl, avatarColor, initial, onAvatarError } = useGithubAvatar(props.page.author)
 
 const categoryLabel = computed(() => getCategoryLabel(props.page.category))
 
@@ -75,22 +73,12 @@ onUnmounted(() => {
     <!-- Header -->
     <div class="flex items-start gap-3 p-4 pb-2">
       <!-- Avatar (clickable) -->
-      <button class="flex-shrink-0 cursor-pointer" @click="goToAuthor" :title="page.author">
-        <img
-          v-if="avatarUrl"
-          :src="avatarUrl"
-          :alt="page.author"
-          class="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-accent-coral"
-          loading="lazy"
-          @error="onAvatarError"
-        />
-        <div
-          v-else
-          class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg hover:ring-2 hover:ring-accent-coral"
-          :style="{ backgroundColor: avatarColor }"
-        >
-          {{ initial }}
-        </div>
+      <button
+        class="flex-shrink-0 cursor-pointer rounded-full hover:ring-2 hover:ring-accent-coral"
+        @click="goToAuthor"
+        :title="page.author"
+      >
+        <AuthorAvatar :author="page.author" size="md" />
       </button>
 
       <!-- Author Info (clickable) -->

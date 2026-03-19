@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router'
 import type { PageInfo } from '@/types/page'
 import { toAuthorSlug } from '@/data/authors'
 import FavoriteButton from '@/components/FavoriteButton.vue'
+import AuthorAvatar from '@/components/AuthorAvatar.vue'
 
 defineProps<{
   page: PageInfo
@@ -54,15 +55,16 @@ defineProps<{
     </p>
     <slot name="footer">
       <p
-        class="mt-auto text-text-dim font-display tracking-wide"
+        class="mt-auto flex items-center gap-1.5 text-text-dim font-display tracking-wide"
         :class="compact ? 'pt-3 text-[10px]' : 'pt-4 text-xs'"
       >
         bởi
         <RouterLink
           :to="{ name: 'author', params: { slug: toAuthorSlug(page.author) } }"
-          class="text-accent-coral hover:underline"
+          class="inline-flex items-center gap-1.5 text-accent-coral hover:underline"
           @click.stop
         >
+          <AuthorAvatar :author="page.author" size="sm" />
           {{ page.author }}
         </RouterLink>
       </p>

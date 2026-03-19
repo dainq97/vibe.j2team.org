@@ -6,11 +6,29 @@ import { Icon } from '@iconify/vue'
 import { getAuthorBySlug } from '@/data/authors'
 import { getCategoryLabel } from '@/data/categories'
 import { getAuthorBadges, getCategoryBreakdown } from '@/data/badges'
+import { isLikelyGitHubUsername, isGitHubUrl } from '@/composables/useGithubAvatar'
+import AuthorAvatar from '@/components/AuthorAvatar.vue'
 import PageCard from '@/components/PageCard.vue'
 
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
 const author = computed(() => getAuthorBySlug(slug.value))
+
+const isGitHub = computed(() => !!author.value && isLikelyGitHubUsername(author.value.author))
+
+// Some authors put their GitHub URL in the `facebook` field of meta.ts.
+// Detect this so we show a single GitHub button instead of a misleading Facebook button.
+const hasGitHubInFacebookField = computed(
+  () => !!author.value?.facebook && isGitHubUrl(author.value.facebook),
+)
+const facebookUrl = computed(() =>
+  !hasGitHubInFacebookField.value ? author.value?.facebook : undefined,
+)
+const githubUrl = computed(() => {
+  if (hasGitHubInFacebookField.value) return author.value!.facebook!
+  if (isGitHub.value) return `https://github.com/${author.value!.author}`
+  return undefined
+})
 
 const pageTitle = computed(() =>
   author.value
@@ -71,14 +89,16 @@ const categoryBreakdown = computed(() => (author.value ? getCategoryBreakdown(au
       <template v-else>
         <!-- Header -->
         <div class="flex flex-wrap items-start gap-4">
+          <AuthorAvatar :author="author.author" size="lg" />
+
           <div class="flex-1 min-w-0">
             <p class="text-text-dim font-display text-xs tracking-widest mb-2">// tác giả</p>
             <h1
               class="font-display text-3xl sm:text-4xl font-bold text-text-primary flex flex-wrap items-center gap-3"
             >
               <a
-                v-if="author.facebook"
-                :href="author.facebook"
+                v-if="facebookUrl || githubUrl"
+                :href="facebookUrl || githubUrl"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="hover:text-accent-coral transition-colors"
@@ -98,16 +118,28 @@ const categoryBreakdown = computed(() => (author.value ? getCategoryBreakdown(au
             </h1>
           </div>
 
-          <a
-            v-if="author.facebook"
-            :href="author.facebook"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 border border-border-default bg-bg-surface px-4 py-2 text-sm text-text-secondary transition hover:border-accent-coral hover:text-text-primary shrink-0"
-          >
-            <Icon icon="lucide:facebook" class="w-4 h-4" />
-            Facebook
-          </a>
+          <div class="flex gap-2 shrink-0">
+            <a
+              v-if="facebookUrl"
+              :href="facebookUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 border border-border-default bg-bg-surface px-4 py-2 text-sm text-text-secondary transition hover:border-accent-coral hover:text-text-primary"
+            >
+              <Icon icon="lucide:facebook" class="w-4 h-4" />
+              Facebook
+            </a>
+            <a
+              v-if="githubUrl"
+              :href="githubUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 border border-border-default bg-bg-surface px-4 py-2 text-sm text-text-secondary transition hover:border-accent-coral hover:text-text-primary"
+            >
+              <Icon icon="lucide:github" class="w-4 h-4" />
+              GitHub
+            </a>
+          </div>
         </div>
 
         <!-- Badges -->
@@ -123,41 +155,49 @@ const categoryBreakdown = computed(() => (author.value ? getCategoryBreakdown(au
           </span>
         </div>
 
-        <!-- Stats & Category breakdown -->
-        <div class="mt-8 border-t border-border-default pt-6">
-          <div class="flex items-baseline gap-2">
-            <span
-              class="font-display text-3xl font-bold"
-              :class="author.rank ? rankStyle.text : 'text-accent-coral'"
-            >
+        <!-- Project Contribution Stats -->
+        <div
+          class="mt-6 grid gap-px bg-border-default border border-border-default"
+          :class="author.rank ? 'grid-cols-3' : 'grid-cols-2'"
+        >
+          <div class="bg-bg-surface p-4 text-center">
+            <p class="font-display text-2xl font-bold text-accent-coral">
               {{ author.apps.length }}
-            </span>
-            <span class="text-sm text-text-secondary">ứng dụng</span>
-            <span v-if="categoryBreakdown.length > 1" class="text-text-dim text-sm">
-              · {{ categoryBreakdown.length }} thể loại
-            </span>
+            </p>
+            <p class="text-[10px] text-text-dim font-display tracking-widest mt-1">ỨNG DỤNG</p>
           </div>
+          <div class="bg-bg-surface p-4 text-center">
+            <p class="font-display text-2xl font-bold text-accent-amber">
+              {{ categoryBreakdown.length }}
+            </p>
+            <p class="text-[10px] text-text-dim font-display tracking-widest mt-1">THỂ LOẠI</p>
+          </div>
+          <div v-if="author.rank" class="bg-bg-surface p-4 text-center">
+            <p class="font-display text-2xl font-bold text-accent-sky">#{{ author.rank }}</p>
+            <p class="text-[10px] text-text-dim font-display tracking-widest mt-1">XẾP HẠNG</p>
+          </div>
+        </div>
 
-          <div v-if="categoryBreakdown.length" class="mt-5 space-y-2.5">
-            <div
-              v-for="cat in categoryBreakdown"
-              :key="cat.id"
-              class="flex items-center gap-3 text-sm"
+        <!-- Category breakdown -->
+        <div v-if="categoryBreakdown.length" class="mt-6 space-y-2.5">
+          <div
+            v-for="cat in categoryBreakdown"
+            :key="cat.id"
+            class="flex items-center gap-3 text-sm"
+          >
+            <Icon :icon="cat.icon" class="w-4 h-4 text-text-dim shrink-0" />
+            <span
+              class="w-28 sm:w-36 truncate text-text-secondary font-display text-xs tracking-wide"
             >
-              <Icon :icon="cat.icon" class="w-4 h-4 text-text-dim shrink-0" />
-              <span
-                class="w-28 sm:w-36 truncate text-text-secondary font-display text-xs tracking-wide"
-              >
-                {{ cat.label }}
-              </span>
-              <div class="flex-1 h-1.5 bg-bg-elevated rounded-full overflow-hidden">
-                <div
-                  class="h-full bg-accent-coral/70 rounded-full transition-all duration-500"
-                  :style="{ width: `${(cat.count / author.apps.length) * 100}%` }"
-                />
-              </div>
-              <span class="text-text-dim font-display text-xs w-6 text-right">{{ cat.count }}</span>
+              {{ cat.label }}
+            </span>
+            <div class="flex-1 h-1.5 bg-bg-elevated rounded-full overflow-hidden">
+              <div
+                class="h-full bg-accent-coral/70 rounded-full transition-all duration-500"
+                :style="{ width: `${(cat.count / author.apps.length) * 100}%` }"
+              />
             </div>
+            <span class="text-text-dim font-display text-xs w-6 text-right">{{ cat.count }}</span>
           </div>
         </div>
 
