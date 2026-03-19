@@ -11,7 +11,6 @@ import { useSearchShortcut } from '@/composables/useSearchShortcut'
 import { useFavoritesStore } from '@/stores/useFavoritesStore'
 import { useRecentlyViewedStore } from '@/stores/useRecentlyViewedStore'
 import { useDraggable } from '@/composables/useDraggable'
-import FavoriteButton from '@/components/FavoriteButton.vue'
 import PageCard from '@/components/PageCard.vue'
 
 const favoritesStore = useFavoritesStore()
@@ -262,47 +261,12 @@ useSearchShortcut(searchInputRef)
               class="absolute top-3 left-3 z-10 w-4 h-4 text-text-dim opacity-50 pointer-events-none"
             />
 
-            <component
-              :is="isReordering ? 'div' : RouterLink"
-              v-bind="isReordering ? {} : { to: page.path }"
-              class="relative flex flex-col border border-border-default bg-bg-surface p-6 h-full transition-all duration-300"
-              :class="
-                isReordering
-                  ? 'select-none'
-                  : 'hover:-translate-y-1 hover:border-l-4 hover:border-l-accent-coral hover:bg-bg-elevated hover:shadow-lg hover:shadow-accent-coral/5'
-              "
-            >
-              <FavoriteButton
-                v-if="!isReordering"
-                :path="page.path"
-                class="top-3 right-4"
-                always-visible
-              />
-
-              <h3
-                class="font-display text-lg font-semibold text-text-primary transition-colors"
-                :class="{ 'group-hover:text-accent-coral': !isReordering }"
-              >
-                {{ page.name }}
-              </h3>
-              <p class="mt-2 text-sm text-text-secondary line-clamp-2" :title="page.description">
-                {{ page.description }}
-              </p>
-              <p class="mt-auto pt-4 text-xs text-text-dim font-display tracking-wide">
-                bởi
-                <a
-                  v-if="page.facebook && !isReordering"
-                  :href="page.facebook"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-accent-coral hover:underline"
-                  @click.stop
-                >
-                  {{ page.author }}
-                </a>
-                <span v-else>{{ page.author }}</span>
-              </p>
-            </component>
+            <PageCard
+              :page="page"
+              :disabled="isReordering"
+              always-visible-favorite
+              class="h-full"
+            />
           </div>
         </div>
       </div>

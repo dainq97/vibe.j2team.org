@@ -6,7 +6,7 @@ import { Icon } from '@iconify/vue'
 import { getAuthorBySlug } from '@/data/authors'
 import { getCategoryLabel } from '@/data/categories'
 import { getAuthorBadges, getCategoryBreakdown } from '@/data/badges'
-import FavoriteButton from '@/components/FavoriteButton.vue'
+import PageCard from '@/components/PageCard.vue'
 
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
@@ -163,26 +163,15 @@ const categoryBreakdown = computed(() => (author.value ? getCategoryBreakdown(au
 
         <!-- Apps grid -->
         <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <RouterLink
-            v-for="app in author.apps"
-            :key="app.path"
-            :to="app.path"
-            class="group relative flex flex-col border border-border-default bg-bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-l-4 hover:border-l-accent-coral hover:bg-bg-elevated hover:shadow-lg hover:shadow-accent-coral/5"
-          >
-            <FavoriteButton :path="app.path" class="top-2 right-3" />
-
-            <h3
-              class="font-display text-lg font-semibold text-text-primary group-hover:text-accent-coral transition-colors"
-            >
-              {{ app.name }}
-            </h3>
-            <p class="mt-2 text-sm text-text-secondary line-clamp-2" :title="app.description">
-              {{ app.description }}
-            </p>
-            <p class="mt-auto pt-4 text-[10px] text-text-dim font-display tracking-wide uppercase">
-              {{ getCategoryLabel(app.category) }}
-            </p>
-          </RouterLink>
+          <PageCard v-for="app in author.apps" :key="app.path" :page="app">
+            <template #footer>
+              <p
+                class="mt-auto pt-4 text-[10px] text-text-dim font-display tracking-wide uppercase"
+              >
+                {{ getCategoryLabel(app.category) }}
+              </p>
+            </template>
+          </PageCard>
         </div>
 
         <!-- Footer links -->

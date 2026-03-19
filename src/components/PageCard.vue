@@ -10,26 +10,38 @@ defineProps<{
   alwaysVisibleFavorite?: boolean
   /** Use compact sizing for horizontal scroll layouts */
   compact?: boolean
+  /** Render as inert div — no link, no hover effects, no favorite button (e.g. during drag-reorder) */
+  disabled?: boolean
 }>()
 </script>
 
 <template>
-  <RouterLink
-    :to="page.path"
-    class="group relative flex flex-col border border-border-default bg-bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-l-4 hover:border-l-accent-coral hover:bg-bg-elevated hover:shadow-lg hover:shadow-accent-coral/5"
-    :class="compact ? 'p-4' : 'p-6'"
+  <component
+    :is="disabled ? 'div' : RouterLink"
+    v-bind="disabled ? {} : { to: page.path }"
+    class="group relative flex flex-col border border-border-default bg-bg-surface transition-all duration-300"
+    :class="[
+      compact ? 'p-4' : 'p-6',
+      disabled
+        ? 'select-none'
+        : 'hover:-translate-y-1 hover:border-l-4 hover:border-l-accent-coral hover:bg-bg-elevated hover:shadow-lg hover:shadow-accent-coral/5',
+    ]"
   >
     <FavoriteButton
+      v-if="!disabled"
       :path="page.path"
-      :class="compact ? 'top-2 right-2' : 'top-3 right-4'"
+      :class="compact ? 'top-2 right-2' : 'top-2 right-3'"
       :always-visible="alwaysVisibleFavorite"
     />
 
     <slot name="background" />
 
     <h3
-      class="font-display font-semibold text-text-primary group-hover:text-accent-coral transition-colors"
-      :class="compact ? 'text-sm line-clamp-1' : 'text-lg'"
+      class="font-display font-semibold text-text-primary transition-colors"
+      :class="[
+        compact ? 'text-sm line-clamp-1' : 'text-lg',
+        !disabled && 'group-hover:text-accent-coral',
+      ]"
     >
       {{ page.name }}
     </h3>
@@ -40,18 +52,20 @@ defineProps<{
     >
       {{ page.description }}
     </p>
-    <p
-      class="mt-auto text-text-dim font-display tracking-wide"
-      :class="compact ? 'pt-3 text-[10px]' : 'pt-4 text-xs'"
-    >
-      bởi
-      <RouterLink
-        :to="{ name: 'author', params: { slug: toAuthorSlug(page.author) } }"
-        class="text-accent-coral hover:underline"
-        @click.stop
+    <slot name="footer">
+      <p
+        class="mt-auto text-text-dim font-display tracking-wide"
+        :class="compact ? 'pt-3 text-[10px]' : 'pt-4 text-xs'"
       >
-        {{ page.author }}
-      </RouterLink>
-    </p>
-  </RouterLink>
+        bởi
+        <RouterLink
+          :to="{ name: 'author', params: { slug: toAuthorSlug(page.author) } }"
+          class="text-accent-coral hover:underline"
+          @click.stop
+        >
+          {{ page.author }}
+        </RouterLink>
+      </p>
+    </slot>
+  </component>
 </template>

@@ -6,11 +6,10 @@ import { Icon } from '@iconify/vue'
 import { pages, featuredPages } from '@/data/pages-loader'
 import type { PageInfo } from '@/types/page'
 import { padIndex } from '@/data/homepage'
-import { toAuthorSlug } from '@/data/authors'
 import { categories, type CategoryId } from '@/data/categories'
 import { normalize } from '@/utils/text'
 import { useSearchShortcut } from '@/composables/useSearchShortcut'
-import FavoriteButton from '@/components/FavoriteButton.vue'
+import PageCard from '@/components/PageCard.vue'
 import { useFavoritesStore } from '@/stores/useFavoritesStore'
 
 const { isFavorite } = useFavoritesStore()
@@ -290,42 +289,21 @@ useSearchShortcut(searchInputRef)
     </div>
 
     <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      <RouterLink
+      <PageCard
         v-for="(page, index) in filteredPages"
         :key="page.path"
         v-memo="[page.path, isFavorite(page.path), index]"
-        :to="page.path"
+        :page="page"
         v-animate="`${(index % 6) * 50}ms`"
-        class="group relative flex flex-col border border-border-default bg-bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-l-4 hover:border-l-accent-coral hover:bg-bg-elevated hover:shadow-lg hover:shadow-accent-coral/5"
       >
-        <FavoriteButton :path="page.path" class="top-2 right-3" />
-
-        <!-- Background number -->
-        <span
-          class="absolute top-3 right-4 font-display text-6xl font-bold text-accent-amber/5 select-none pointer-events-none"
-        >
-          {{ padIndex(index) }}
-        </span>
-
-        <h3
-          class="font-display text-lg font-semibold text-text-primary group-hover:text-accent-coral transition-colors"
-        >
-          {{ page.name }}
-        </h3>
-        <p class="mt-2 text-sm text-text-secondary line-clamp-2" :title="page.description">
-          {{ page.description }}
-        </p>
-        <p class="mt-auto pt-4 text-xs text-text-dim font-display tracking-wide">
-          bởi
-          <RouterLink
-            :to="{ name: 'author', params: { slug: toAuthorSlug(page.author) } }"
-            class="text-accent-coral hover:underline"
-            @click.stop
+        <template #background>
+          <span
+            class="absolute top-3 right-4 font-display text-6xl font-bold text-accent-amber/5 select-none pointer-events-none"
           >
-            {{ page.author }}
-          </RouterLink>
-        </p>
-      </RouterLink>
+            {{ padIndex(index) }}
+          </span>
+        </template>
+      </PageCard>
 
       <!-- Placeholder card -->
       <a
