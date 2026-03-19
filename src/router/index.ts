@@ -17,6 +17,8 @@ declare module 'vue-router' {
 
 const HomePage = () => import('@/views/HomePage.vue')
 const ContentPolicy = () => import('@/views/ContentPolicy.vue')
+const TermsOfService = () => import('@/views/TermsOfService.vue')
+const PrivacyPolicy = () => import('@/views/PrivacyPolicy.vue')
 const LeaderboardPage = () => import('@/views/LeaderboardPage.vue')
 const BookmarksPage = () => import('@/views/BookmarksPage.vue')
 const AuthorPage = () => import('@/views/AuthorPage.vue')
@@ -110,6 +112,24 @@ const router = createRouter({
       meta: {
         title: 'Chính sách nội dung - vibe.j2team.org',
         description: 'Chính sách nội dung cho các trang con trên vibe.j2team.org.',
+      },
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: TermsOfService,
+      meta: {
+        title: 'Điều khoản sử dụng - vibe.j2team.org',
+        description: 'Điều khoản sử dụng trang web vibe.j2team.org.',
+      },
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: PrivacyPolicy,
+      meta: {
+        title: 'Chính sách bảo mật - vibe.j2team.org',
+        description: 'Chính sách bảo mật và quyền riêng tư trên vibe.j2team.org.',
       },
     },
     // 404 catch-all is added AFTER dynamic page routes in the beforeEach guard

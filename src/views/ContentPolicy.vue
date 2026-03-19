@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 </script>
 
@@ -141,6 +142,21 @@ import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
         <p class="text-xs text-text-dim">
           Chính sách này có thể được cập nhật theo thời gian. Việc tiếp tục đóng góp đồng nghĩa với
           việc bạn đồng ý tuân thủ phiên bản mới nhất của chính sách.
+        </p>
+        <p class="mt-4 text-xs text-text-dim flex items-center gap-2 flex-wrap">
+          <RouterLink
+            to="/terms"
+            class="text-text-dim hover:text-text-secondary transition-colors link-underline"
+          >
+            Điều khoản sử dụng
+          </RouterLink>
+          <span class="text-border-default">·</span>
+          <RouterLink
+            to="/privacy"
+            class="text-text-dim hover:text-text-secondary transition-colors link-underline"
+          >
+            Chính sách bảo mật
+          </RouterLink>
         </p>
       </div>
     </div>
